@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Loader2, Brain, Thermometer, Clock, Building2 } from "lucide-react";
 import { CorrelationScatter } from "@/components/charts/CorrelationScatter";
 import { InsightCard } from "@/components/InsightCard";
@@ -16,6 +17,7 @@ import {
 } from "@/lib/analytics";
 
 export default function Insights() {
+  const navigate = useNavigate();
   const { data: buildings, isLoading: buildingsLoading } = useBuildings();
   const { data: anomalies } = useAnomalies();
 
@@ -99,6 +101,14 @@ export default function Insights() {
                 value={`${coldSnapCount}`}
                 icon={Thermometer}
                 variant={coldSnapCount > 3 ? "warning" : "default"}
+                action={
+                  coldSnapCount > 0
+                    ? {
+                        label: "View cold snap anomalies",
+                        onClick: () => navigate("/anomalies?filter=cold"),
+                      }
+                    : undefined
+                }
               />
               <InsightCard
                 title="Heat Wave Events"
@@ -106,6 +116,14 @@ export default function Insights() {
                 value={`${heatWaveCount}`}
                 icon={Thermometer}
                 variant={heatWaveCount > 3 ? "warning" : "default"}
+                action={
+                  heatWaveCount > 0
+                    ? {
+                        label: "View heat wave anomalies",
+                        onClick: () => navigate("/anomalies?filter=heat"),
+                      }
+                    : undefined
+                }
               />
               <InsightCard
                 title="Buildings Analyzed"
