@@ -117,13 +117,20 @@ export default function Anomalies() {
               const count = filterCounts?.[filter] || 0;
               const isActive = activeFilter === filter;
 
+              // Special color for cold filter - keep it blue
+              const coldColors = filter === "cold" 
+                ? isActive 
+                  ? "bg-blue-600 text-white hover:bg-blue-700 border-blue-600" 
+                  : "border-blue-400 text-blue-600 hover:bg-blue-50"
+                : "";
+
               return (
                 <Button
                   key={filter}
                   variant={isActive ? "default" : "outline"}
                   size="sm"
-                  className={`h-8 text-xs gap-1.5 ${
-                    isActive ? "" : "hover:bg-muted"
+                  className={`h-8 text-xs gap-1.5 ${coldColors} ${
+                    isActive && filter !== "cold" ? "" : filter !== "cold" ? "hover:bg-muted" : ""
                   }`}
                   onClick={() => setFilter(filter)}
                 >
@@ -132,7 +139,7 @@ export default function Anomalies() {
                   <span
                     className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${
                       isActive
-                        ? "bg-primary-foreground/20 text-primary-foreground"
+                        ? filter === "cold" ? "bg-white/20 text-white" : "bg-primary-foreground/20 text-primary-foreground"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
