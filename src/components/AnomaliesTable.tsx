@@ -83,7 +83,7 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
                           : "bg-blue-100 text-blue-700"
                       }`}
                     >
-                      {row.pct_over_median !== null ? `+${row.pct_over_median}%` : "—"}
+                      {row.pct_over_median !== null ? `+${row.pct_over_median.toFixed(3)}%` : "—"}
                     </span>
                   </TableCell>
                   <TableCell className="text-right font-medium">
