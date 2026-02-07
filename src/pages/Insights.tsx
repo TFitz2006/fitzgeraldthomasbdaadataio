@@ -55,6 +55,21 @@ export default function Insights() {
 
   return (
     <div className="p-8">
+      {/* Insights Value Proposition */}
+      <div className="mb-8 p-6 bg-primary/5 rounded-xl border border-primary/10">
+        <h2 className="text-lg font-semibold text-foreground mb-3">
+          💡 How This Data Helps You Save Money
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          By analyzing the relationship between weather patterns and energy consumption, facility managers can identify 
+          buildings that are highly weather-sensitive and prioritize HVAC upgrades or envelope improvements. Understanding 
+          baseload consumption reveals always-on equipment that may be running unnecessarily during off-hours. Cold snap 
+          and heat wave analysis highlights when extreme weather drives costly demand spikes, enabling proactive scheduling 
+          and load-shedding strategies. Together, these insights help reduce utility costs, optimize maintenance budgets, 
+          and make data-driven decisions about capital improvements.
+        </p>
+      </div>
+
       {/* Header */}
       <div className="mb-6">
         <h1 className="page-title flex items-center gap-2">
