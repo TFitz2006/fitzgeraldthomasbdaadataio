@@ -10,19 +10,19 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon: Icon, suffix, description }: KPICardProps) {
   return (
-    <div className="kpi-card p-6">
-      <div className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <Icon className="w-7 h-7 text-primary" />
+    <div className="kpi-card p-4">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{title}</p>
-          <p className="text-3xl font-bold text-foreground tracking-tight">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">{title}</p>
+          <p className="text-xl font-bold text-foreground tracking-tight truncate">
             {typeof value === "number" ? value.toLocaleString() : value}
-            {suffix && <span className="text-lg font-semibold text-muted-foreground ml-1">{suffix}</span>}
+            {suffix && <span className="text-sm font-medium text-muted-foreground ml-1">{suffix}</span>}
           </p>
           {description && (
-            <p className="text-sm text-muted-foreground mt-1">{description}</p>
+            <p className="text-xs text-muted-foreground truncate">{description}</p>
           )}
         </div>
       </div>
