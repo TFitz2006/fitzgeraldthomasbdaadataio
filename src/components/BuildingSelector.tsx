@@ -43,7 +43,7 @@ export function BuildingSelector({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[320px] justify-between bg-card"
+            className="min-w-[200px] justify-between bg-card"
           >
             {selectedBuilding
               ? `${selectedBuilding.building_name} — ${selectedBuilding.campusname}`
