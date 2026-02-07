@@ -57,7 +57,7 @@ export async function fetchBuildings(): Promise<Building[]> {
 
 export async function fetchHourlyTimeseries(buildingId: string): Promise<HourlyTimeseries[]> {
   // McPherson (building 53) has bad data after April 1st - exclude it
-  const dateFilter = buildingId === '53' ? " AND timestamp_hour < '2024-04-01'" : "";
+  const dateFilter = buildingId === '53' ? " AND timestamp_hour < '2025-04-01'" : "";
   return queryDatabricks<HourlyTimeseries>(
     `SELECT timestamp_hour, building_id, energy_kwh, temp FROM ${SCHEMA}.ui_hourly_timeseries WHERE building_id = '${buildingId}'${dateFilter} ORDER BY timestamp_hour`
   );
@@ -84,6 +84,6 @@ export async function fetchHeatmapData(buildingId: string): Promise<HeatmapData[
 export async function fetchAnomalies(): Promise<Anomaly[]> {
   // Exclude McPherson (building 53) anomalies after April 1st
   return queryDatabricks<Anomaly>(
-    `SELECT day, building_id, building_name, campusname, pct_over_median, daily_kwh, baseline_median_daily_kwh, avg_temp, total_precip FROM ${SCHEMA}.ui_top_anomalies WHERE NOT (building_id = '53' AND day >= '2024-04-01') ORDER BY pct_over_median DESC`
+    `SELECT day, building_id, building_name, campusname, pct_over_median, daily_kwh, baseline_median_daily_kwh, avg_temp, total_precip FROM ${SCHEMA}.ui_top_anomalies WHERE NOT (building_id = '53' AND day >= '2025-04-01') ORDER BY pct_over_median DESC`
   );
 }
