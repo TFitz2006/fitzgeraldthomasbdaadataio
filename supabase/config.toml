@@ -1,1 +1,4 @@
 project_id = "rfhstsalweeihklkhgbk"
+
+[functions.databricks-query]
+verify_jwt = false
