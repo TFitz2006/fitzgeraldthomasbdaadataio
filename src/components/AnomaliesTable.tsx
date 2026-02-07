@@ -21,10 +21,17 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
     navigate(`/deep-dive?building=${buildingId}`);
   };
 
-  const getAnomalySeverity = (pctOver: number) => {
+  const getAnomalySeverity = (pctOver: number | null) => {
+    if (pctOver === null || pctOver === undefined) return "low";
     if (pctOver >= 150) return "high";
     if (pctOver >= 100) return "medium";
     return "low";
+  };
+
+  const formatNumber = (value: number | null | undefined, decimals?: number): string => {
+    if (value === null || value === undefined) return "—";
+    if (decimals !== undefined) return value.toFixed(decimals);
+    return value.toLocaleString();
   };
 
   return (
@@ -63,9 +70,9 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
                   onClick={() => handleRowClick(row.building_id)}
                 >
-                  <TableCell className="text-muted-foreground">{row.day}</TableCell>
-                  <TableCell className="font-medium">{row.building_name}</TableCell>
-                  <TableCell className="text-muted-foreground">{row.campusname}</TableCell>
+                  <TableCell className="text-muted-foreground">{row.day || "—"}</TableCell>
+                  <TableCell className="font-medium">{row.building_name || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{row.campusname || "—"}</TableCell>
                   <TableCell className="text-right">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
@@ -76,20 +83,20 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
                           : "bg-blue-100 text-blue-700"
                       }`}
                     >
-                      +{row.pct_over_median}%
+                      {row.pct_over_median !== null ? `+${row.pct_over_median}%` : "—"}
                     </span>
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    {row.daily_kwh.toLocaleString()}
+                    {formatNumber(row.daily_kwh)}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {row.baseline_median_daily_kwh.toLocaleString()}
+                    {formatNumber(row.baseline_median_daily_kwh)}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {row.avg_temp}°
+                    {row.avg_temp !== null && row.avg_temp !== undefined ? `${row.avg_temp}°` : "—"}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {row.total_precip.toFixed(1)}
+                    {formatNumber(row.total_precip, 1)}
                   </TableCell>
                 </TableRow>
               );

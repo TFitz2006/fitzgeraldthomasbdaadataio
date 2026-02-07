@@ -47,15 +47,15 @@ export interface HeatmapData {
 }
 
 export interface Anomaly {
-  day: string;
+  day: string | null;
   building_id: string;
-  building_name: string;
-  campusname: string;
-  pct_over_median: number;
-  daily_kwh: number;
-  baseline_median_daily_kwh: number;
-  avg_temp: number;
-  total_precip: number;
+  building_name: string | null;
+  campusname: string | null;
+  pct_over_median: number | null;
+  daily_kwh: number | null;
+  baseline_median_daily_kwh: number | null;
+  avg_temp: number | null;
+  total_precip: number | null;
 }
 
 // Mock data
