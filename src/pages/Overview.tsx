@@ -3,17 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { KPICard } from "@/components/KPICard";
 import { TopBuildingsChart } from "@/components/charts/TopBuildingsChart";
 import { ExecutiveSummary } from "@/components/ExecutiveSummary";
-import { useKPIs, useTop10Kwh, useTop10Intensity, useAnomalies } from "@/hooks/useDatabricks";
+import { useKPIs, useTop10Kwh, useAnomalies } from "@/hooks/useDatabricks";
 import { Button } from "@/components/ui/button";
 
 export default function Overview() {
   const navigate = useNavigate();
   const { data: kpis, isLoading: kpisLoading, error: kpisError } = useKPIs();
   const { data: top10Kwh, isLoading: kwhLoading } = useTop10Kwh();
-  const { data: top10Intensity, isLoading: intensityLoading } = useTop10Intensity();
   const { data: anomalies, isLoading: anomaliesLoading } = useAnomalies();
 
-  const isLoading = kpisLoading || kwhLoading || intensityLoading || anomaliesLoading;
+  const isLoading = kpisLoading || kwhLoading || anomaliesLoading;
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -117,7 +116,7 @@ export default function Overview() {
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
               {top10Kwh && top10Kwh.length > 0 && (
                 <TopBuildingsChart
                   data={top10Kwh}
@@ -125,15 +124,6 @@ export default function Overview() {
                   title="By Total Energy (kWh)"
                   color="hsl(var(--chart-energy))"
                   yAxisLabel="Total Energy"
-                />
-              )}
-              {top10Intensity && top10Intensity.length > 0 && (
-                <TopBuildingsChart
-                  data={top10Intensity}
-                  dataKey="avg_intensity"
-                  title="By Energy Intensity (kWh/sqft)"
-                  color="hsl(var(--chart-intensity))"
-                  yAxisLabel="Avg Intensity"
                 />
               )}
             </div>
