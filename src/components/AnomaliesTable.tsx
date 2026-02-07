@@ -8,7 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Anomaly } from "@/lib/mockData";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Snowflake, Sun, CloudRain } from "lucide-react";
+import { interpretAnomalyWeather } from "@/lib/analytics";
 
 interface AnomaliesTableProps {
   data: Anomaly[];
@@ -34,6 +35,44 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
     return value.toLocaleString();
   };
 
+  const getWeatherIcon = (anomaly: Anomaly) => {
+    const weather = interpretAnomalyWeather(anomaly);
+    switch (weather.cause) {
+      case "cold_snap":
+        return <Snowflake className="w-4 h-4 text-primary" />;
+      case "heat_wave":
+        return <Sun className="w-4 h-4 text-chart-weather" />;
+      case "precipitation":
+        return <CloudRain className="w-4 h-4 text-primary" />;
+      default:
+        return null;
+    }
+  };
+
+  const getWeatherBadge = (anomaly: Anomaly) => {
+    const weather = interpretAnomalyWeather(anomaly);
+    if (weather.cause === "unknown") return null;
+
+    const badgeStyles = {
+      cold_snap: "bg-primary/10 text-primary border-primary/20",
+      heat_wave: "bg-chart-weather/10 text-chart-weather border-chart-weather/20",
+      precipitation: "bg-primary/10 text-primary border-primary/20",
+      unknown: "",
+    };
+
+    return (
+      <span
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${badgeStyles[weather.cause]}`}
+        title={weather.label}
+      >
+        {getWeatherIcon(anomaly)}
+        {weather.cause === "cold_snap" && "Cold"}
+        {weather.cause === "heat_wave" && "Heat"}
+        {weather.cause === "precipitation" && "Rain"}
+      </span>
+    );
+  };
+
   return (
     <div className="card-dashboard overflow-hidden p-0">
       <div className="p-6 pb-4 border-b border-border">
@@ -54,10 +93,10 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
               <TableHead className="font-medium">Building</TableHead>
               <TableHead className="font-medium">Campus</TableHead>
               <TableHead className="font-medium text-right">% Over Median</TableHead>
+              <TableHead className="font-medium">Weather Context</TableHead>
               <TableHead className="font-medium text-right">Daily kWh</TableHead>
               <TableHead className="font-medium text-right">Baseline kWh</TableHead>
               <TableHead className="font-medium text-right">Avg Temp (°F)</TableHead>
-              <TableHead className="font-medium text-right">Precip (in)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -77,14 +116,19 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                         severity === "high"
-                          ? "bg-red-100 text-red-700"
+                          ? "bg-destructive/10 text-destructive"
                           : severity === "medium"
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-blue-100 text-blue-700"
+                          ? "bg-chart-weather/10 text-chart-weather"
+                          : "bg-primary/10 text-primary"
                       }`}
                     >
                       {row.pct_over_median !== null ? `+${row.pct_over_median.toFixed(3)}%` : "—"}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    {getWeatherBadge(row) || (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-right font-medium">
                     {formatNumber(row.daily_kwh)}
@@ -94,9 +138,6 @@ export function AnomaliesTable({ data }: AnomaliesTableProps) {
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
                     {row.avg_temp !== null && row.avg_temp !== undefined ? `${row.avg_temp}°` : "—"}
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {formatNumber(row.total_precip, 1)}
                   </TableCell>
                 </TableRow>
               );

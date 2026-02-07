@@ -1,8 +1,9 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Building2, AlertTriangle, Zap } from "lucide-react";
+import { LayoutDashboard, Building2, AlertTriangle, Zap, Brain } from "lucide-react";
 
 const navItems = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
+  { to: "/insights", label: "Analytics Insights", icon: Brain },
   { to: "/deep-dive", label: "Building Deep Dive", icon: Building2 },
   { to: "/anomalies", label: "Anomalies", icon: AlertTriangle },
 ];

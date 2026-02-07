@@ -1,14 +1,16 @@
 import { Zap, Building2, CloudSun, Gauge, Loader2 } from "lucide-react";
 import { KPICard } from "@/components/KPICard";
 import { TopBuildingsChart } from "@/components/charts/TopBuildingsChart";
-import { useKPIs, useTop10Kwh, useTop10Intensity } from "@/hooks/useDatabricks";
+import { ExecutiveSummary } from "@/components/ExecutiveSummary";
+import { useKPIs, useTop10Kwh, useTop10Intensity, useAnomalies } from "@/hooks/useDatabricks";
 
 export default function Overview() {
   const { data: kpis, isLoading: kpisLoading, error: kpisError } = useKPIs();
   const { data: top10Kwh, isLoading: kwhLoading } = useTop10Kwh();
   const { data: top10Intensity, isLoading: intensityLoading } = useTop10Intensity();
+  const { data: anomalies, isLoading: anomaliesLoading } = useAnomalies();
 
-  const isLoading = kpisLoading || kwhLoading || intensityLoading;
+  const isLoading = kpisLoading || kwhLoading || intensityLoading || anomaliesLoading;
 
   return (
     <div className="p-8">
@@ -40,7 +42,10 @@ export default function Overview() {
         </div>
       )}
 
-      {/* KPI Cards */}
+      {/* Executive Summary - Key Findings */}
+      {!isLoading && kpis && (
+        <ExecutiveSummary kpis={kpis} top10Kwh={top10Kwh} anomalies={anomalies} />
+      )}
       {!isLoading && kpis && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <KPICard
