@@ -50,7 +50,7 @@ export default function Anomalies() {
             <div className="card-dashboard">
               <p className="text-sm text-muted-foreground">Highest Deviation</p>
               <p className="text-2xl font-bold text-chart-anomaly mt-1">
-                +{sortedAnomalies[0]?.pct_over_median || 0}%
+                +{(sortedAnomalies[0]?.pct_over_median || 0).toFixed(3)}%
               </p>
             </div>
             <div className="card-dashboard">
