@@ -56,8 +56,10 @@ export async function fetchBuildings(): Promise<Building[]> {
 }
 
 export async function fetchHourlyTimeseries(buildingId: string): Promise<HourlyTimeseries[]> {
+  // McPherson (building 53) has bad data after April 1st - exclude it
+  const dateFilter = buildingId === '53' ? " AND timestamp_hour < '2024-04-01'" : "";
   return queryDatabricks<HourlyTimeseries>(
-    `SELECT timestamp_hour, building_id, energy_kwh, temp FROM ${SCHEMA}.ui_hourly_timeseries WHERE building_id = '${buildingId}' ORDER BY timestamp_hour`
+    `SELECT timestamp_hour, building_id, energy_kwh, temp FROM ${SCHEMA}.ui_hourly_timeseries WHERE building_id = '${buildingId}'${dateFilter} ORDER BY timestamp_hour`
   );
 }
 
