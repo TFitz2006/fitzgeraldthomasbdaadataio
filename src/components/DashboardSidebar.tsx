@@ -20,8 +20,8 @@ export function DashboardSidebar() {
             <Zap className="w-5 h-5 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-sidebar-foreground">Campus Energy</h1>
-            <p className="text-xs text-sidebar-muted">+ Weather</p>
+            <h1 className="text-sm font-semibold text-sidebar-foreground">Ohio State University</h1>
+            <p className="text-xs text-sidebar-muted">Electricity Analysis</p>
           </div>
         </div>
       </div>
