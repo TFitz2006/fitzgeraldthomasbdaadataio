@@ -43,19 +43,18 @@ serve(async (req: Request) => {
       throw new Error('Query is required');
     }
 
-    // Validate query is one of the allowed views
+    // Validate query references allowed tables (workspace.hackathon.*)
     const allowedTables = [
-      'hackathon.ui_kpis',
-      'hackathon.ui_top10_total_kwh',
-      'hackathon.ui_top10_intensity',
-      'hackathon.ui_buildings',
-      'hackathon.ui_hourly_timeseries',
-      'hackathon.ui_building_hourly_profile',
-      'hackathon.ui_building_heatmap',
-      'hackathon.ui_top_anomalies',
+      'workspace.hackathon.ui_kpis',
+      'workspace.hackathon.ui_top10_total_kwh',
+      'workspace.hackathon.ui_top10_intensity',
+      'workspace.hackathon.ui_buildings',
+      'workspace.hackathon.ui_hourly_timeseries',
+      'workspace.hackathon.ui_building_hourly_profile',
+      'workspace.hackathon.ui_building_heatmap',
+      'workspace.hackathon.ui_top_anomalies',
     ];
 
-    // Simple validation - ensure query references only allowed tables
     const queryLower = query.toLowerCase();
     const hasValidTable = allowedTables.some(table => 
       queryLower.includes(table.toLowerCase())
@@ -75,6 +74,8 @@ serve(async (req: Request) => {
     }
     const warehouseId = warehouseMatch[1];
 
+    console.log(`Executing query on warehouse ${warehouseId}:`, query);
+
     const response = await fetch(statementUrl, {
       method: 'POST',
       headers: {
@@ -91,6 +92,7 @@ serve(async (req: Request) => {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`Databricks API error: ${response.status}`, errorText);
       throw new Error(`Databricks API error: ${response.status} - ${errorText}`);
     }
 
@@ -98,12 +100,22 @@ serve(async (req: Request) => {
 
     // Check for execution errors
     if (result.status?.state === 'FAILED' || result.error) {
-      throw new Error(result.error?.message || 'Query execution failed');
+      const errorMsg = result.error?.message || 'Query execution failed';
+      console.error('Query failed:', errorMsg, JSON.stringify(result));
+      throw new Error(errorMsg);
+    }
+
+    // Handle pending state - query may still be running
+    if (result.status?.state === 'PENDING' || result.status?.state === 'RUNNING') {
+      console.log('Query still running, state:', result.status?.state);
+      throw new Error('Query timed out - please try again');
     }
 
     // Transform result to array of objects
     const columns = result.manifest?.schema?.columns || [];
     const dataArray = result.result?.data_array || [];
+
+    console.log(`Query returned ${dataArray.length} rows with ${columns.length} columns`);
 
     const data = dataArray.map((row) => {
       const obj: Record<string, unknown> = {};
