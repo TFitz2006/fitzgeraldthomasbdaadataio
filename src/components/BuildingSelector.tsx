@@ -24,7 +24,7 @@ interface BuildingSelectorProps {
 }
 
 // Buildings to exclude from selection (no data available)
-const EXCLUDED_BUILDINGS = ["Hoop Greenhouse"];
+const EXCLUDED_BUILDINGS = ["4-H Center - Hoop Greenhouse D"];
 
 export function BuildingSelector({
   buildings,
