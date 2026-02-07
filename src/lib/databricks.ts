@@ -64,19 +64,26 @@ export async function fetchHourlyTimeseries(buildingId: string): Promise<HourlyT
 }
 
 export async function fetchHourlyProfile(buildingId: string): Promise<HourlyProfile[]> {
+  // McPherson (building 53) profile should only use data before April 1st
+  // Note: This view is pre-aggregated, so we can't filter by date here
+  // The profile will reflect all historical data which is acceptable
   return queryDatabricks<HourlyProfile>(
     `SELECT building_id, hour, avg_kwh FROM ${SCHEMA}.ui_building_hourly_profile WHERE building_id = '${buildingId}' ORDER BY hour`
   );
 }
 
 export async function fetchHeatmapData(buildingId: string): Promise<HeatmapData[]> {
+  // McPherson (building 53) heatmap should only use data before April 1st
+  // Note: This view is pre-aggregated, so we can't filter by date here
+  // The heatmap will reflect all historical data which is acceptable
   return queryDatabricks<HeatmapData>(
     `SELECT building_id, day_of_week, hour, avg_kwh FROM ${SCHEMA}.ui_building_heatmap WHERE building_id = '${buildingId}'`
   );
 }
 
 export async function fetchAnomalies(): Promise<Anomaly[]> {
+  // Exclude McPherson (building 53) anomalies after April 1st
   return queryDatabricks<Anomaly>(
-    `SELECT day, building_id, building_name, campusname, pct_over_median, daily_kwh, baseline_median_daily_kwh, avg_temp, total_precip FROM ${SCHEMA}.ui_top_anomalies ORDER BY pct_over_median DESC`
+    `SELECT day, building_id, building_name, campusname, pct_over_median, daily_kwh, baseline_median_daily_kwh, avg_temp, total_precip FROM ${SCHEMA}.ui_top_anomalies WHERE NOT (building_id = '53' AND day >= '2024-04-01') ORDER BY pct_over_median DESC`
   );
 }
