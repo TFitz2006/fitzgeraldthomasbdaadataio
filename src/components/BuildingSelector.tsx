@@ -23,6 +23,9 @@ interface BuildingSelectorProps {
   onSelect: (buildingId: string) => void;
 }
 
+// Buildings to exclude from selection (no data available)
+const EXCLUDED_BUILDINGS = ["Hoop Greenhouse"];
+
 export function BuildingSelector({
   buildings,
   selectedBuildingId,
@@ -30,7 +33,12 @@ export function BuildingSelector({
 }: BuildingSelectorProps) {
   const [open, setOpen] = useState(false);
 
-  const selectedBuilding = buildings.find(
+  // Filter out buildings with no data
+  const filteredBuildings = buildings.filter(
+    (b) => !EXCLUDED_BUILDINGS.includes(b.building_name)
+  );
+
+  const selectedBuilding = filteredBuildings.find(
     (b) => String(b.building_id) === selectedBuildingId
   );
 
@@ -57,7 +65,7 @@ export function BuildingSelector({
             <CommandList>
               <CommandEmpty>No building found.</CommandEmpty>
               <CommandGroup>
-                {buildings.map((building) => (
+                {filteredBuildings.map((building) => (
                   <CommandItem
                     key={String(building.building_id)}
                     value={`${building.building_name} ${building.campusname}`}
