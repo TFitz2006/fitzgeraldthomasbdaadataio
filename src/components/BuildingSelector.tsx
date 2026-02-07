@@ -16,15 +16,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Building } from "@/lib/mockData";
+import { isExcludedBuilding } from "@/lib/buildingExclusions";
 
 interface BuildingSelectorProps {
   buildings: Building[];
   selectedBuildingId: string;
   onSelect: (buildingId: string) => void;
 }
-
-// Buildings to exclude from selection (no data available)
-const EXCLUDED_BUILDINGS = ["4-H Center - Hoop Greenhouse D"];
 
 export function BuildingSelector({
   buildings,
@@ -34,9 +32,7 @@ export function BuildingSelector({
   const [open, setOpen] = useState(false);
 
   // Filter out buildings with no data
-  const filteredBuildings = buildings.filter(
-    (b) => !EXCLUDED_BUILDINGS.includes(b.building_name)
-  );
+  const filteredBuildings = buildings.filter((b) => !isExcludedBuilding(b));
 
   const selectedBuilding = filteredBuildings.find(
     (b) => String(b.building_id) === selectedBuildingId

@@ -12,29 +12,50 @@ import {
   useHourlyProfile,
   useHeatmapData,
 } from "@/hooks/useDatabricks";
+import {
+  isExcludedBuilding,
+  isExcludedBuildingId,
+} from "@/lib/buildingExclusions";
 
 export default function DeepDive() {
   const [searchParams, setSearchParams] = useSearchParams();
   const buildingFromUrl = searchParams.get("building");
-  
+  const buildingFromUrlSafe =
+    buildingFromUrl && !isExcludedBuildingId(buildingFromUrl)
+      ? buildingFromUrl
+      : null;
+
   const { data: buildings, isLoading: buildingsLoading } = useBuildings();
-  
-  const [selectedBuildingId, setSelectedBuildingId] = useState(buildingFromUrl || "");
 
-  // Set default building when buildings load
+  const [selectedBuildingId, setSelectedBuildingId] = useState(
+    buildingFromUrlSafe || ""
+  );
+
+  // Set default building when buildings load (skip excluded buildings)
   useEffect(() => {
-    if (buildings && buildings.length > 0 && !selectedBuildingId) {
-      const defaultId = buildingFromUrl || String(buildings[0].building_id);
+    if (!buildings || buildings.length === 0) return;
+
+    const firstValid = buildings.find((b) => !isExcludedBuilding(b));
+    if (!firstValid) return;
+
+    const selectedIsExcluded =
+      !!selectedBuildingId && isExcludedBuildingId(selectedBuildingId);
+
+    if ((!selectedBuildingId && !buildingFromUrlSafe) || selectedIsExcluded) {
+      const defaultId = String(firstValid.building_id);
       setSelectedBuildingId(defaultId);
+      if (buildingFromUrl !== defaultId) {
+        setSearchParams({ building: defaultId });
+      }
     }
-  }, [buildings, buildingFromUrl, selectedBuildingId]);
+  }, [buildings, buildingFromUrl, buildingFromUrlSafe, selectedBuildingId, setSearchParams]);
 
-  // Update from URL changes
+  // Update from URL changes (ignore excluded IDs)
   useEffect(() => {
-    if (buildingFromUrl && buildingFromUrl !== selectedBuildingId) {
-      setSelectedBuildingId(buildingFromUrl);
+    if (buildingFromUrlSafe && buildingFromUrlSafe !== selectedBuildingId) {
+      setSelectedBuildingId(buildingFromUrlSafe);
     }
-  }, [buildingFromUrl]);
+  }, [buildingFromUrlSafe, selectedBuildingId]);
 
   const handleBuildingSelect = (buildingId: string) => {
     setSelectedBuildingId(buildingId);
