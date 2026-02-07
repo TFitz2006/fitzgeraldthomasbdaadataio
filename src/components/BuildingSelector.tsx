@@ -27,7 +27,7 @@ export function BuildingSelector({
         </SelectTrigger>
         <SelectContent className="bg-card border-border">
           {buildings.map((building) => (
-            <SelectItem key={building.building_id} value={building.building_id}>
+            <SelectItem key={String(building.building_id)} value={String(building.building_id)}>
               {building.building_name} — {building.campusname}
             </SelectItem>
           ))}
