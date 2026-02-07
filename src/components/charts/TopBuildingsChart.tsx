@@ -50,21 +50,22 @@ export function TopBuildingsChart({
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
           <XAxis
             type="number"
             tickFormatter={formatValue}
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
             axisLine={{ stroke: "hsl(var(--border))" }}
           />
           <YAxis
             type="category"
             dataKey="building_name"
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
             axisLine={{ stroke: "hsl(var(--border))" }}
-            width={95}
+            width={120}
+            tickFormatter={(value: string) => value.length > 18 ? `${value.slice(0, 16)}...` : value}
           />
           <Tooltip
             formatter={(value: number) => [
