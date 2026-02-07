@@ -118,7 +118,7 @@
   }
 
   .kpi-value {
-    @apply text-3xl font-bold text-foreground tracking-tight;
+    @apply text-2xl font-bold text-foreground tracking-tight;
   }
 
   .kpi-label {
