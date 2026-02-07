@@ -16,13 +16,13 @@ export function KPICard({ title, value, icon: Icon, suffix, description }: KPICa
           <Icon className="w-5 h-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">{title}</p>
-          <p className="text-xl font-bold text-foreground tracking-tight truncate">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
+          <p className="text-lg font-bold text-foreground tracking-tight">
             {typeof value === "number" ? value.toLocaleString() : value}
-            {suffix && <span className="text-sm font-medium text-muted-foreground ml-1">{suffix}</span>}
+            {suffix && <span className="text-xs font-medium text-muted-foreground ml-1">{suffix}</span>}
           </p>
           {description && (
-            <p className="text-xs text-muted-foreground truncate">{description}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
           )}
         </div>
       </div>
