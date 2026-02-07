@@ -24,7 +24,7 @@ export default function DeepDive() {
   // Set default building when buildings load
   useEffect(() => {
     if (buildings && buildings.length > 0 && !selectedBuildingId) {
-      const defaultId = buildingFromUrl || buildings[0].building_id;
+      const defaultId = buildingFromUrl || String(buildings[0].building_id);
       setSelectedBuildingId(defaultId);
     }
   }, [buildings, buildingFromUrl, selectedBuildingId]);
@@ -42,7 +42,7 @@ export default function DeepDive() {
   };
 
   const selectedBuilding = buildings?.find(
-    (b) => b.building_id === selectedBuildingId
+    (b) => String(b.building_id) === String(selectedBuildingId)
   );
 
   // Fetch building-specific data
@@ -51,6 +51,9 @@ export default function DeepDive() {
   const { data: heatmapData, isLoading: heatmapLoading } = useHeatmapData(selectedBuildingId);
 
   const isChartsLoading = timeseriesLoading || profileLoading || heatmapLoading;
+
+  // Check if timeseries has any weather data (temp not null/undefined)
+  const hasWeatherData = timeseriesData && timeseriesData.some(d => d.temp !== undefined && d.temp !== null);
 
   return (
     <div className="p-8">
@@ -140,9 +143,9 @@ export default function DeepDive() {
               </div>
             )}
             
-            {timeseriesData && timeseriesData.some(d => d.temp !== undefined) ? (
+            {hasWeatherData ? (
               <WeatherChart
-                data={timeseriesData}
+                data={timeseriesData!}
                 title="Temperature Over Time (°F)"
               />
             ) : (
