@@ -58,9 +58,12 @@ export function Heatmap({ data, title }: HeatmapProps) {
   const getColor = (value: number) => {
     if (value === 0 || maxVal === minVal) return "hsl(var(--muted))";
     const ratio = (value - minVal) / (maxVal - minVal);
-    // Gradient from light teal to dark teal
-    const lightness = 85 - ratio * 45;
-    return `hsl(199, 89%, ${lightness}%)`;
+    // Gradient from light gray to scarlet red
+    // Low values: light gray (0, 0%, 90%)
+    // High values: scarlet red (0, 100%, 37%)
+    const saturation = ratio * 100;
+    const lightness = 90 - ratio * 53;
+    return `hsl(0, ${saturation}%, ${lightness}%)`;
   };
 
   return (
@@ -108,7 +111,7 @@ export function Heatmap({ data, title }: HeatmapProps) {
         <div
           className="w-32 h-3 rounded"
           style={{
-            background: `linear-gradient(to right, hsl(199, 89%, 85%), hsl(199, 89%, 40%))`,
+            background: `linear-gradient(to right, hsl(0, 0%, 90%), hsl(0, 100%, 37%))`,
           }}
         />
         <span className="text-xs text-muted-foreground">{maxVal.toFixed(0)} kWh</span>
