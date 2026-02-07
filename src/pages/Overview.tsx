@@ -1,4 +1,4 @@
-import { Zap, Building2, CloudSun, Gauge, Loader2, TrendingUp, ArrowRight } from "lucide-react";
+import { Zap, Building2, CloudSun, Loader2, TrendingUp, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { KPICard } from "@/components/KPICard";
 import { TopBuildingsChart } from "@/components/charts/TopBuildingsChart";
@@ -66,7 +66,7 @@ export default function Overview() {
                 At a Glance
               </h2>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <KPICard
                 title="Total Consumption"
                 value={kpis.total_kwh}
@@ -86,13 +86,6 @@ export default function Overview() {
                 icon={CloudSun}
                 suffix="%"
                 description="Readings with weather data"
-              />
-              <KPICard
-                title="Avg Intensity"
-                value={typeof kpis.avg_intensity === 'number' ? kpis.avg_intensity.toFixed(1) : kpis.avg_intensity}
-                icon={Gauge}
-                suffix="kWh/sqft"
-                description="Energy per square foot"
               />
             </div>
           </section>
