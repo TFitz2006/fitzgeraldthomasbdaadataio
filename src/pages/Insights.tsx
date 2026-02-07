@@ -15,6 +15,7 @@ import {
   interpretCorrelation,
   calculateBaseload,
 } from "@/lib/analytics";
+import { isExcludedBuilding } from "@/lib/buildingExclusions";
 
 export default function Insights() {
   const navigate = useNavigate();
@@ -23,9 +24,9 @@ export default function Insights() {
 
   const [selectedBuildingId, setSelectedBuildingId] = useState("");
 
-  // Set default building when loaded
-  const firstBuilding = buildings?.[0];
-  const activeBuildingId = selectedBuildingId || String(firstBuilding?.building_id || "");
+  // Set default building when loaded (skip excluded buildings)
+  const firstValidBuilding = buildings?.find((b) => !isExcludedBuilding(b));
+  const activeBuildingId = selectedBuildingId || String(firstValidBuilding?.building_id || "");
 
   const { data: timeseriesData, isLoading: timeseriesLoading } =
     useHourlyTimeseries(activeBuildingId);
