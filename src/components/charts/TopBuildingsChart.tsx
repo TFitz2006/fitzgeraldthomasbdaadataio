@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { AlertTriangle } from "lucide-react";
 
 interface TopBuildingsChartProps {
   data: Array<{
@@ -36,6 +37,17 @@ export function TopBuildingsChart({
     navigate(`/deep-dive?building=${entry.building_id}`);
   };
 
+  const handleOutlierClick = (buildingId: string) => {
+    navigate(`/deep-dive?building=${buildingId}`);
+  };
+
+  // Detect outlier: if first item is > 2x the second, treat as outlier
+  const hasOutlier = data.length >= 2 && dataKey === "total_kwh" && 
+    (data[0]?.total_kwh || 0) > 2 * (data[1]?.total_kwh || 0);
+
+  const outlier = hasOutlier ? data[0] : null;
+  const chartData = hasOutlier ? data.slice(1) : data;
+
   const formatValue = (value: number) => {
     if (dataKey === "total_kwh") {
       return `${(value / 1000).toFixed(0)}k`;
@@ -43,12 +55,42 @@ export function TopBuildingsChart({
     return value.toFixed(1);
   };
 
+  const formatFullValue = (value: number) => {
+    if (dataKey === "total_kwh") {
+      return `${value.toLocaleString()} kWh`;
+    }
+    return `${value.toFixed(2)} kWh/sqft`;
+  };
+
   return (
     <div className="chart-container">
       <h3 className="text-sm font-medium text-foreground mb-4">{title}</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      
+      {/* Outlier Callout */}
+      {outlier && (
+        <div 
+          className="mb-4 p-3 rounded-lg border-2 border-chart-anomaly/30 bg-chart-anomaly/5 cursor-pointer hover:bg-chart-anomaly/10 transition-colors"
+          onClick={() => handleOutlierClick(outlier.building_id)}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <AlertTriangle className="w-4 h-4 text-chart-anomaly" />
+            <span className="text-xs font-medium text-chart-anomaly uppercase tracking-wide">Outlier</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-foreground">{outlier.building_name}</span>
+            <span className="text-lg font-bold text-chart-anomaly">
+              {formatFullValue(outlier.total_kwh || 0)}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            {((outlier.total_kwh || 0) / (chartData[0]?.total_kwh || 1)).toFixed(1)}x higher than next building
+          </p>
+        </div>
+      )}
+
+      <ResponsiveContainer width="100%" height={hasOutlier ? 270 : 300}>
         <BarChart
-          data={data}
+          data={chartData}
           layout="vertical"
           margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
         >
@@ -89,7 +131,7 @@ export function TopBuildingsChart({
             cursor="pointer"
             onClick={(data) => handleBarClick(data)}
           >
-            {data.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 className="bar-clickable"
@@ -99,7 +141,7 @@ export function TopBuildingsChart({
         </BarChart>
       </ResponsiveContainer>
       <p className="text-xs text-muted-foreground mt-2 text-center">
-        Click a bar to view building details
+        Click {hasOutlier ? "the outlier or " : ""}a bar to view building details
       </p>
     </div>
   );
