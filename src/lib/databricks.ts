@@ -38,14 +38,16 @@ export async function fetchKPIs(): Promise<KPIs> {
 }
 
 export async function fetchTop10Kwh(): Promise<BuildingKwh[]> {
+  // Exclude McPherson (building 53) due to data quality issues
   return queryDatabricks<BuildingKwh>(
-    `SELECT building_id, building_name, total_kwh FROM ${SCHEMA}.ui_top10_total_kwh ORDER BY total_kwh DESC LIMIT 10`
+    `SELECT building_id, building_name, total_kwh FROM ${SCHEMA}.ui_top10_total_kwh WHERE building_id != '53' ORDER BY total_kwh DESC LIMIT 10`
   );
 }
 
 export async function fetchTop10Intensity(): Promise<BuildingIntensity[]> {
+  // Exclude McPherson (building 53) due to data quality issues
   return queryDatabricks<BuildingIntensity>(
-    `SELECT building_id, building_name, avg_intensity FROM ${SCHEMA}.ui_top10_intensity ORDER BY avg_intensity DESC LIMIT 10`
+    `SELECT building_id, building_name, avg_intensity FROM ${SCHEMA}.ui_top10_intensity WHERE building_id != '53' ORDER BY avg_intensity DESC LIMIT 10`
   );
 }
 

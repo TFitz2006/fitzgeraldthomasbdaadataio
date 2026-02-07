@@ -1,7 +1,7 @@
-export const EXCLUDED_BUILDING_IDS = new Set(["1926"]);
+export const EXCLUDED_BUILDING_IDS = new Set(["1926", "53"]);
 
 // Fallback name match in case IDs change between datasets.
-const EXCLUDED_NAME_SUBSTRINGS = ["hoop greenhouse"];
+const EXCLUDED_NAME_SUBSTRINGS = ["hoop greenhouse", "mcpherson"];
 
 export function isExcludedBuildingId(buildingId: string | number | null | undefined) {
   if (buildingId === null || buildingId === undefined) return false;
