@@ -2,6 +2,8 @@
 
 A real-time energy consumption analytics platform for facility managers and sustainability teams. Built on top of **Databricks** for data processing and **Lovable Cloud** for the backend, this dashboard provides actionable insights into building-level energy usage across an entire campus or portfolio.
 
+Current Link: https://fitzgeraldthomasbdaadataio.lovable.app
+
 ---
 
 ## 📋 Table of Contents
