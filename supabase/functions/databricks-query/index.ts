@@ -85,7 +85,7 @@ serve(async (req: Request) => {
       body: JSON.stringify({
         warehouse_id: warehouseId,
         statement: query,
-        wait_timeout: '30s',
+        wait_timeout: '50s',
         parameters: params || [],
       }),
     });
@@ -96,7 +96,7 @@ serve(async (req: Request) => {
       throw new Error(`Databricks API error: ${response.status} - ${errorText}`);
     }
 
-    const result: DatabricksResponse = await response.json();
+    let result: DatabricksResponse = await response.json();
 
     // Check for execution errors
     if (result.status?.state === 'FAILED' || result.error) {
@@ -105,10 +105,40 @@ serve(async (req: Request) => {
       throw new Error(errorMsg);
     }
 
-    // Handle pending state - query may still be running
+    // Poll if query is still pending/running (warehouse cold start)
+    const statementId = (result as any).statement_id;
+    let pollAttempts = 0;
+    const maxPollAttempts = 30; // ~60 seconds total
+    while (
+      (result.status?.state === 'PENDING' || result.status?.state === 'RUNNING') &&
+      pollAttempts < maxPollAttempts
+    ) {
+      pollAttempts++;
+      console.log(`Query still ${result.status?.state}, polling attempt ${pollAttempts}...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const pollResponse = await fetch(`${statementUrl}/${statementId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${DATABRICKS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!pollResponse.ok) {
+        const errorText = await pollResponse.text();
+        throw new Error(`Poll error: ${pollResponse.status} - ${errorText}`);
+      }
+
+      result = await pollResponse.json();
+
+      if (result.status?.state === 'FAILED' || result.error) {
+        throw new Error(result.error?.message || 'Query execution failed');
+      }
+    }
+
     if (result.status?.state === 'PENDING' || result.status?.state === 'RUNNING') {
-      console.log('Query still running, state:', result.status?.state);
-      throw new Error('Query timed out - please try again');
+      throw new Error('Query timed out after polling - warehouse may still be starting');
     }
 
     // Transform result to array of objects
